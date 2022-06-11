@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  octoprintEnder:
+    image: octoprint/octoprint
+    #command: tail -F anything
+    environment:
+      - ENABLE_MJPG_STREAMER=true
+   #   - CAMERA_DEV=/dev/video1
+   # volumes:
+   #   - 
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+  
+    ports:
+      - "5000:5000"
+
+  BlynkServer:
+    image: maxbanton/blynk-server
+    tty: true
+    volumes:
+      - .:/usr/share/
+    ports:
+      - "8080:8080"
+      - "9443:9443"
+
+  WebCam:
+    image: openhorizon/mjpg-streamer-pi3
+    tty: true
+    command: ./mjpg_streamer -o "output_http.so -w ./www" -i "input_uvc.so -r 1280x720 -d /dev/video0 -f 30"
+    devices:
+      - /dev/video1:/dev/video0
+    ports:
+      - "8888:8080"
